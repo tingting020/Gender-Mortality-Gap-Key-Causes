@@ -1,0 +1,250 @@
+---
+title: "Final project proposal"
+output: html_document
+date: "2025-05-16"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+Data cleaning
+```{r}
+# load data
+df <- read.csv("AB_NYC_2019.csv")
+
+# data cleaning
+df_clean <- na.omit(df[, c("reviews_per_month", "neighbourhood_group", "room_type", "price", "minimum_nights", "calculated_host_listings_count")])
+
+# cleaned csv file
+write.csv(df_clean, "AB_NYC_2019_cleaned.csv", row.names = FALSE)
+
+```
+
+1. Numeric summaries
+```{r}
+df_clean %>%
+  group_by(neighbourhood_group)%>%
+  summarise(
+    n = n(),
+    mean_reviews_per_month = mean(reviews_per_month, na.rm = TRUE),
+    sd_reviews_per_month = sd(reviews_per_month, na.rm = TRUE),
+    q25 = quantile(reviews_per_month, 0.25, na.rm = TRUE),
+    q50 = quantile(reviews_per_month, 0.50, na.rm = TRUE),
+    q75 = quantile(reviews_per_month, 0.75, na.rm = TRUE)
+  )
+
+df_clean %>%
+  group_by(room_type)%>%
+  summarise(
+    n = n(),
+    mean_reviews_per_month = mean(reviews_per_month, na.rm = TRUE),
+    sd_reviews_per_month = sd(reviews_per_month, na.rm = TRUE),
+    q25 = quantile(reviews_per_month, 0.25, na.rm = TRUE),
+    q50 = quantile(reviews_per_month, 0.50, na.rm = TRUE),
+    q75 = quantile(reviews_per_month, 0.75, na.rm = TRUE)
+  )
+
+df_clean %>%
+  group_by(neighbourhood_group)%>%
+  summarise(
+    n = n(),
+    mean_price = mean(price, na.rm = TRUE),
+    sd_price = sd(price, na.rm = TRUE),
+    q25 = quantile(price, 0.25, na.rm = TRUE),
+    q50 = quantile(price, 0.50, na.rm = TRUE),
+    q75 = quantile(price, 0.75, na.rm = TRUE)
+  )
+
+df_clean %>%
+  group_by(room_type)%>%
+  summarise(
+    n = n(),
+    mean_price = mean(price, na.rm = TRUE),
+    sd_price = sd(price, na.rm = TRUE),
+    q25 = quantile(price, 0.25, na.rm = TRUE),
+    q50 = quantile(price, 0.50, na.rm = TRUE),
+    q75 = quantile(price, 0.75, na.rm = TRUE)
+  )
+
+df_clean %>%
+  group_by(neighbourhood_group)%>%
+  summarise(
+    n = n(),
+    mean_minimum_nights = mean(minimum_nights, na.rm = TRUE),
+    sd_minimum_nights = sd(minimum_nights, na.rm = TRUE),
+    q25 = quantile(minimum_nights, 0.25, na.rm = TRUE),
+    q50 = quantile(minimum_nights, 0.50, na.rm = TRUE),
+    q75 = quantile(minimum_nights, 0.75, na.rm = TRUE)
+  )
+
+df_clean %>%
+  group_by(room_type)%>%
+  summarise(
+    n = n(),
+    mean_minimum_nights = mean(minimum_nights, na.rm = TRUE),
+    sd_minimum_nights = sd(minimum_nights, na.rm = TRUE),
+    q25 = quantile(minimum_nights, 0.25, na.rm = TRUE),
+    q50 = quantile(minimum_nights, 0.50, na.rm = TRUE),
+    q75 = quantile(minimum_nights, 0.75, na.rm = TRUE)
+  )
+
+df_clean %>%
+  group_by(neighbourhood_group)%>%
+  summarise(
+    n = n(),
+    mean_clc = mean(calculated_host_listings_count, na.rm = TRUE),
+    sd_clc = sd(calculated_host_listings_count, na.rm = TRUE),
+    q25 = quantile(calculated_host_listings_count, 0.25, na.rm = TRUE),
+    q50 = quantile(calculated_host_listings_count, 0.50, na.rm = TRUE),
+    q75 = quantile(calculated_host_listings_count, 0.75, na.rm = TRUE)
+  )
+
+df_clean %>%
+  group_by(room_type)%>%
+  summarise(
+    n = n(),
+    mean_clc = mean(calculated_host_listings_count, na.rm = TRUE),
+    sd_clc = sd(calculated_host_listings_count, na.rm = TRUE),
+    q25 = quantile(calculated_host_listings_count, 0.25, na.rm = TRUE),
+    q50 = quantile(calculated_host_listings_count, 0.50, na.rm = TRUE),
+    q75 = quantile(calculated_host_listings_count, 0.75, na.rm = TRUE)
+  )
+```
+
+2. Scatterplots for continuous pretictors and response variable
+```{r}
+df_clean %>%
+  ggplot(aes(x = price, y = reviews_per_month)) +
+  geom_point() +
+  labs(title = "The relationship of reviews_per_month and price",
+       x = "price", y = "reviews_per_month")
+
+df_clean %>%
+  ggplot(aes(x = minimum_nights, y = reviews_per_month)) +
+  geom_point() +
+  labs(title = "The relationship of reviews_per_month and minimum_nights",
+       x = "minimum_nights", y = "reviews_per_month")
+
+df_clean %>%
+  ggplot(aes(x = calculated_host_listings_count, y = reviews_per_month)) +
+  geom_point() +
+  labs(title = "The relationship of reviews_per_month and 
+       calculated_host_listings_count",
+       x = "calculated_host_listings_count", y = "reviews_per_month")
+```
+3. Scartterplot matrix
+```{r}
+pairs(df_clean[, c("reviews_per_month", "price", 
+                            "minimum_nights", "calculated_host_listings_count")])
+```
+4. Boxplots
+```{r}
+df_clean %>%
+  ggplot(aes(x = neighbourhood_group, y = reviews_per_month)) +
+  geom_boxplot() +
+  labs(title = "The relationship of neighbourhood_group and reviews_per_month",
+       x = "neighbourhood_group", y = "reviews_per_month")
+
+df_clean  %>%
+  ggplot(aes(x = room_type, y = reviews_per_month)) +
+  geom_boxplot() +
+  labs(title = "The relationship of room_type and reviews_per_month",
+       x = "room_type", y = "reviews_per_month")
+```
+
+5. Histograms
+```{r}
+df_clean  %>%
+  ggplot(aes(x = reviews_per_month)) +
+  geom_histogram(binwidth = 3, fill = "pink") +
+  coord_cartesian(xlim = c(0, 58.5)) +
+  labs(title = "reviews_per_month Distribution")
+
+df_clean  %>%
+  ggplot(aes(x = price)) +
+  geom_histogram(binwidth = 20, fill = "pink") +
+  coord_cartesian(xlim = c(0, 1000)) +
+  labs(title = "Price Distribution")
+
+df_clean  %>%
+  ggplot(aes(x = calculated_host_listings_count)) +
+  geom_histogram(binwidth = 12, fill = "pink") +
+  coord_cartesian(xlim = c(0, 327)) +
+  labs(title = "calculated_host_listings_count Distribution")
+
+df_clean  %>%
+  ggplot(aes(x = minimum_nights)) +
+  geom_histogram(binwidth = 15, fill = "pink") +
+  coord_cartesian(xlim = c(0, 500)) +
+  labs(title = "minimum_nights Distribution")
+```
+Fitted model and assumptions check
+```{r}
+# multiple linear regression(two methods led to the same fitted model)
+y = df_clean$reviews_per_month
+x1 = df_clean$neighbourhood_group
+x2 = df_clean$room_type
+x3 = df_clean$price
+x4 = df_clean$minimum_nights
+x5 = df_clean$calculated_host_listings_count
+
+# using matrices
+X <- model.matrix(~x1 + x2 + x3 + x4 + x5)
+Y <- y
+beta_hat <- solve(t(X) %*% X) %*% t(X) %*% Y
+beta_hat
+
+# using default R
+model <- lm(y ~ x1 + x2 + x3 + x4 + x5, data = df_clean)
+beta_hats <- coef(model)
+
+# summary
+summary(model)
+
+# check the assumption
+
+# Residual grid
+par(mfrow = c(2,2), oma = c(0, 0, 2, 0))
+
+# standardized residuals
+sresidual_values <- rstandard(model)
+
+# QQ Plot
+qqnorm(sresidual_values, main = "QQ plot for standardized residuals")
+qqline(sresidual_values, col = "red")
+
+# Fitted values and residuals
+fitted_value <- fitted(model)
+residuals <- resid(model)
+plot(fitted_value, residuals, main = " fitted values versus residuals", xlab = "Fitted", ylab = "Residuals")
+abline(h = 0, col = "red", lty = 2)
+
+# Fitted value and standardized residuals
+plot(fitted_value, sresidual_values, main = " fitted values versus standarized residuals", xlab = "Fitted", ylab = "Standardized residuals")
+abline(h = 0, col = "red", lty = 2)
+
+# histogram
+hist(sresidual_values, xlab = "Standarized residuals", ylab = "Frequency")
+par(mfrow = c(1, 1))
+```
